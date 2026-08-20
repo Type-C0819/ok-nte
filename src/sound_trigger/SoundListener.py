@@ -60,7 +60,7 @@ class SoundListener:
         self._stop_event: Optional[threading.Event] = None
         self._listener_thread: Optional[threading.Thread] = None
         self._last_trigger_time = 0.0
-        self._trigger_interval = 0.5
+        self._trigger_interval = 0.25
 
         self._sample_waveform = None
         self._counter_sample_waveform = None
@@ -168,11 +168,12 @@ class SoundListener:
             )
             try:
                 self._listener_thread.start()
-            except Exception:
+            except Exception as error:
                 self._running = False
                 self._stop_event = None
                 self._listener_thread = None
-                raise
+                logger.error(f"Failed to start SoundListener thread: {error}")
+                return False
 
         logger.info("SoundListener started successfully")
         return True

@@ -187,6 +187,12 @@
             "height": 1440
         },
         {
+            "id": 31,
+            "file_name": "images/12.png",
+            "width": 1600,
+            "height": 900
+        },
+        {
             "id": 32,
             "file_name": "images/0.png",
             "width": 2560,
@@ -236,7 +242,7 @@
         },
         {
             "id": 43,
-            "file_name": "images/0.png",
+            "file_name": "images/1.png",
             "width": 2560,
             "height": 1440
         }
@@ -791,9 +797,9 @@
         {
             "id": 43,
             "image_id": 18,
-            "category_id": 43,
+            "category_id": 88,
             "bbox": [
-                1494,
+                1493,
                 931,
                 45,
                 48
@@ -1025,7 +1031,7 @@
         {
             "id": 61,
             "image_id": 14,
-            "category_id": 42,
+            "category_id": 82,
             "bbox": [
                 26,
                 22,
@@ -1038,7 +1044,7 @@
         {
             "id": 62,
             "image_id": 28,
-            "category_id": 62,
+            "category_id": 84,
             "bbox": [
                 513,
                 339,
@@ -1298,7 +1304,7 @@
         {
             "id": 82,
             "image_id": 34,
-            "category_id": 82,
+            "category_id": 62,
             "bbox": [
                 64,
                 27,
@@ -1319,6 +1325,58 @@
                 64
             ],
             "area": 4160,
+            "iscrowd": 0
+        },
+        {
+            "id": 84,
+            "image_id": 43,
+            "category_id": 85,
+            "bbox": [
+                91,
+                1055,
+                65,
+                64
+            ],
+            "area": 4160,
+            "iscrowd": 0
+        },
+        {
+            "id": 85,
+            "image_id": 43,
+            "category_id": 86,
+            "bbox": [
+                2408,
+                751,
+                55,
+                54
+            ],
+            "area": 2970,
+            "iscrowd": 0
+        },
+        {
+            "id": 86,
+            "image_id": 43,
+            "category_id": 42,
+            "bbox": [
+                2401,
+                743,
+                68,
+                227
+            ],
+            "area": 15436,
+            "iscrowd": 0
+        },
+        {
+            "id": 87,
+            "image_id": 31,
+            "category_id": 87,
+            "bbox": [
+                1243,
+                776,
+                40,
+                40
+            ],
+            "area": 1600,
             "iscrowd": 0
         }
     ],
@@ -1530,12 +1588,7 @@
         },
         {
             "id": 42,
-            "name": "in_domain",
-            "supercategory": ""
-        },
-        {
-            "id": 43,
-            "name": "launcher_start_game",
+            "name": "box_volleyball_stars",
             "supercategory": ""
         },
         {
@@ -1630,7 +1683,7 @@
         },
         {
             "id": 62,
-            "name": "heist_exit",
+            "name": "exit_2",
             "supercategory": ""
         },
         {
@@ -1730,12 +1783,37 @@
         },
         {
             "id": 82,
-            "name": "in_domain_2",
+            "name": "exit_1",
             "supercategory": ""
         },
         {
             "id": 83,
             "name": "volleyball_restart",
+            "supercategory": ""
+        },
+        {
+            "id": 84,
+            "name": "heist_exit_panel",
+            "supercategory": ""
+        },
+        {
+            "id": 85,
+            "name": "volleyball_next",
+            "supercategory": ""
+        },
+        {
+            "id": 86,
+            "name": "volleyball_star",
+            "supercategory": ""
+        },
+        {
+            "id": 87,
+            "name": "launcher_update",
+            "supercategory": ""
+        },
+        {
+            "id": 88,
+            "name": "launcher_start",
             "supercategory": ""
         }
     ]

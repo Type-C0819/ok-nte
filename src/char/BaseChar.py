@@ -40,7 +40,7 @@ class Element(StrEnum):
 class BaseChar:
     """角色基类，定义了游戏角色的通用属性和行为。"""
 
-    Element = Element
+    ElementType = Element
     INTRO_MOTION_FREEZE_DURATION = 1.5
     en_name = ""
     cn_name = ""
@@ -268,6 +268,7 @@ class BaseChar:
         self,
         name: str | None = None,
         tags: set[Planner.ActionTag] | None = None,
+        add_tags: set[Planner.ActionTag] | Planner.ActionTag | None = None,
         reason: str = "arc action available",
         can_execute=None,
         priority_ready: ActionPredicate | None = None,
@@ -286,10 +287,15 @@ class BaseChar:
         """
 
         name = name or f"{self.__str__()}_arc"
-        action_tags = tags or {Planner.ActionTag.ARC_ACTION}
+        tags = set(tags) if tags else {Planner.ActionTag.ARC_ACTION}
+        if add_tags:
+            if isinstance(add_tags, (set, list, tuple)):
+                tags.update(add_tags)
+            else:
+                tags.add(add_tags)
 
         return self.planner_action(
-            tags=action_tags,
+            tags=tags,
             slot=Planner.ActionSlot.ARC,
             execute=lambda context: self.click_arc(),
             name=name,
@@ -302,6 +308,7 @@ class BaseChar:
         self,
         name: str | None = None,
         tags: set[Planner.ActionTag] | None = None,
+        add_tags: set[Planner.ActionTag] | Planner.ActionTag | None = None,
         reason: str = "ultimate action available",
         can_execute=None,
     ):
@@ -322,10 +329,15 @@ class BaseChar:
         """
 
         name = name or f"{self.__str__()}_ultimate"
-        action_tags = tags or {Planner.ActionTag.ULTIMATE_ACTION}
+        tags = set(tags) if tags else {Planner.ActionTag.ULTIMATE_ACTION}
+        if add_tags:
+            if isinstance(add_tags, (set, list, tuple)):
+                tags.update(add_tags)
+            else:
+                tags.add(add_tags)
 
         return self.planner_action(
-            tags=action_tags,
+            tags=tags,
             slot=Planner.ActionSlot.ULTIMATE,
             execute=lambda context: self.click_ultimate(),
             name=name,
@@ -340,6 +352,7 @@ class BaseChar:
         self,
         name: str | None = None,
         tags: set[Planner.ActionTag] | None = None,
+        add_tags: set[Planner.ActionTag] | Planner.ActionTag | None = None,
         reason: str = "skill action available",
         down_time: float = 0.01,
         can_execute=None,
@@ -362,10 +375,15 @@ class BaseChar:
         """
 
         name = name or f"{self.__str__()}_skill"
-        action_tags = tags or {Planner.ActionTag.SKILL_ACTION}
+        tags = set(tags) if tags else {Planner.ActionTag.SKILL_ACTION}
+        if add_tags:
+            if isinstance(add_tags, (set, list, tuple)):
+                tags.update(add_tags)
+            else:
+                tags.add(add_tags)
 
         return self.planner_action(
-            tags=action_tags,
+            tags=tags,
             slot=Planner.ActionSlot.SKILL,
             execute=lambda context: self.click_skill(down_time=down_time),
             name=name,
@@ -686,7 +704,7 @@ class BaseChar:
             if not self.task.find_one(
                 Labels.box_ultimate,
                 template=processed_snapshot,
-                box=box_ultimate,
+                box=box_ultimate.scale(1.1, 1.1),
                 frame_processor=gf.isolate_text_to_black,
                 threshold=0.7,
             ):
@@ -758,6 +776,7 @@ class BaseChar:
             self.add_freeze_duration(animation_start, time.time() - animation_start)
         if clicked:
             self.last_skill_time = skill_click_time
+            self.task.wait_until(lambda: self.task.get_cd("skill") > 0.3, time_out=1)
             self.sleep(post_sleep)
         duration = time.time() - skill_click_time if skill_click_time != 0 else 0
         return clicked, duration, animation_start > 0
@@ -1045,3 +1064,37 @@ class BaseChar:
     def now(self):
         """Gets the current system monotonic time."""
         return time.monotonic()
+
+    def get_teammate_by_class(self, *char_classes):
+        """按角色类型查找队友, 并按参数顺序返回匹配结果。
+
+        每个类型对应一个结果, 未找到时为 None。当前角色不会作为自己的队友返回。
+        """
+        teammates = [c for c in self.task.chars if c is not None and c.index != self.index]
+
+        return tuple(
+            next((c for c in teammates if isinstance(c, cls)), None)
+            for cls in char_classes
+        )
+
+    def get_teammates_by_role(self, role: Planner.Role) -> list["BaseChar"]:
+        """按队伍定位查找所有队友, 返回匹配角色组成的列表。
+
+        当前角色不会出现在结果中; 队伍中没有匹配角色时返回空列表。
+        """
+        return [
+            char
+            for char in self.task.chars
+            if char is not None
+            and char.index != self.index
+            and char.describe_role().role == role
+        ]
+
+    def find_element_reaction_target(self, char=None):
+        """查找可与指定角色触发环合反应的队友。
+
+        未传入角色时以当前角色为起点。没有可触发反应的队友时返回 None。
+        """
+        if char is None:
+            char = self
+        return self.task.find_element_reaction_target(char)

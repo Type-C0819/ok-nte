@@ -11,7 +11,7 @@ from src.combat.planner import (
 
 class Nanally(BaseChar):
     cn_name = "娜娜莉"
-    element = BaseChar.Element.GREEN
+    element = BaseChar.ElementType.GREEN
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,12 +28,8 @@ class Nanally(BaseChar):
         ultimate = self.click_ultimate_action()
 
         def entry():
-            skill_result = yield skill
-            if skill_result and self.ultimate_available():
-                self.sleep(0.6)
-
-            ultimate_result = yield ultimate
-            if ultimate_result:
+            yield skill
+            if (yield ultimate):
                 self.perform_in_ult(context, skill)
 
         return self.plan(

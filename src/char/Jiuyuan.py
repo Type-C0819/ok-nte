@@ -8,7 +8,7 @@ from src.combat.planner import (
 
 class Jiuyuan(BaseChar):
     cn_name = "九原"
-    element = BaseChar.Element.GREEN
+    element = BaseChar.ElementType.GREEN
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -30,8 +30,7 @@ class Jiuyuan(BaseChar):
 
         def entry():
             yield ultimate
-            skill_result = yield skill
-            if not skill_result:
+            if not (yield skill):
                 yield bullets
 
         return self.plan(ultimate, skill, bullets, entry=entry)

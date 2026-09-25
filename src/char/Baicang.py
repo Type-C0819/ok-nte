@@ -24,7 +24,7 @@ class Baicang(BaseChar):
     """
 
     cn_name = "白藏"
-    element = BaseChar.Element.RED
+    element = BaseChar.ElementType.RED
 
     MAX_FIELD_TIME = 0
     ULT_FIELD_DURATION = 12.0
@@ -83,13 +83,11 @@ class Baicang(BaseChar):
         )
 
         def entry():
-            ultimate_result = yield ultimate
-            if ultimate_result:
+            if (yield ultimate):
                 self._perform_burst(context)
                 return
 
-            skill_result = yield skill
-            if skill_result:
+            if (yield skill):
                 self._post_skill_dodge()
             else:
                 yield fallback_dodge

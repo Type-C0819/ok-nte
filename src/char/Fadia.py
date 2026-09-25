@@ -5,7 +5,7 @@ from src.combat.planner import Planner, RoleProfile
 
 class Fadia(BaseChar):
     cn_name = "法帝娅"
-    element = BaseChar.Element.BLUE
+    element = BaseChar.ElementType.BLUE
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,8 +21,7 @@ class Fadia(BaseChar):
         skill = self.click_skill_action()
 
         def entry():
-            ultimate_result = yield ultimate
-            if not ultimate_result:
+            if not (yield ultimate):
                 yield skill
 
         return self.plan(ultimate, skill, entry=entry)

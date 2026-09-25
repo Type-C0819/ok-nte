@@ -1,11 +1,11 @@
 from src.char.BaseChar import BaseChar
-from src.combat.planner import CombatContext, Planner, RoleProfile
+from src.combat.planner import Planner, RoleProfile
 from src.Labels import Labels
 
 
 class Zankou(BaseChar):
-    cn_name = "残红"
-    element = BaseChar.Element.WHITE
+    cn_name = "残虹"
+    element = BaseChar.ElementType.RED
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,8 +21,8 @@ class Zankou(BaseChar):
         skill_combo = self.planner_action(
             tags=Planner.ActionTag.DEFAULT_ACTION,
             slot=Planner.ActionSlot.SKILL,
-            execute=self.perform_skill_combo,
-            name="zankou_skill",
+            execute=lambda _: self.perform_skill_combo(),
+            name="zankou_skill_combo",
             reason="skill action available",
             can_execute=lambda _: self.skill_available(),
             priority_ready=lambda _: self.skill_available(),
@@ -30,8 +30,7 @@ class Zankou(BaseChar):
 
         def entry():
             if not self.find_ult_purple():
-                combo_result = yield skill_combo
-                if combo_result and self.ultimate_available():
+                if (yield skill_combo) and self.ultimate_available():
                     self.task.wait_until(
                         self.find_ult_purple,
                         post_action=self.click_with_interval,
@@ -41,33 +40,50 @@ class Zankou(BaseChar):
             if self.find_ult_purple():
                 yield ultimate
                 self.task.wait_until(
-                    self.ultimate_available, post_action=self.click_with_interval, time_out=2
+                    self.ultimate_available, post_action=self.click_with_interval, time_out=3
                 )
                 yield ultimate.repeat_for_entry()
 
         return self.plan(skill_combo, ultimate, entry=entry)
 
-    def perform_skill_combo(self, context: CombatContext):
+    def perform_skill_combo(self):
         deadline = self.now() + 10
-        to_find = [Labels.zankou_skill_gold, Labels.zankou_skill_purple]
-        click_skill = False
+        clicked_skill = False
         while self.now() < deadline:
-            for feature in to_find:
-                if self.task.find_one(feature):
-                    if not self.skill_available() or not context.is_slot_available(
-                        self,
-                        slot=Planner.ActionSlot.SKILL,
-                    ):
-                        continue
-                    if click_skill := self.click_skill():
-                        if feature == Labels.zankou_skill_purple:
-                            self.sleep(2)
-                            return True
-            if self.find_ult_purple():
-                return click_skill
+            click_skill, purple_skill = self.click_zankou_skill()
+            if not clicked_skill:
+                clicked_skill = click_skill
+            if purple_skill or self.find_ult_purple():
+                break
+
             self.sleep(0.1)
-            self.click()
-        return click_skill
+
+            try:
+                self.task.mouse_down()
+                for _ in range(5):
+                    if self.find_zankou_skill() or self.find_ult_purple():
+                        break
+                    self.sleep(0.1)
+            finally:
+                self.task.mouse_up()
+
+        return clicked_skill
+
+    def find_zankou_skill(self):
+        to_find = [Labels.zankou_skill_gold, Labels.zankou_skill_purple]
+        for feature_name in to_find:
+            if self.task.find_one(feature_name):
+                return feature_name
+
+    def click_zankou_skill(self):
+        click_skill = False
+        purple_skill = False
+        if feature_name := self.find_zankou_skill():
+            if click_skill := self.click_skill():
+                if feature_name == Labels.zankou_skill_purple:
+                    self.sleep(2)
+                    purple_skill = True
+        return click_skill, purple_skill
 
     def find_ult_purple(self):
         return self.task.find_one(Labels.zankou_ult_purple)

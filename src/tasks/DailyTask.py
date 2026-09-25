@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Callable, Iterator, List, Optional, Tuple, Type, TypeVar, cast
 
 from ok import CannotFindException, TaskDisabledException, find_color_rectangles
-from qfluentwidgets import FluentIcon
 
 from src import text_white_color
 from src.Labels import Labels
@@ -27,7 +26,7 @@ class DailyTask(NTEOneTimeTask, BaseNTETask):
     # --- 配置项键名 ---
     CONF_TASK = "副本类型"
     TASK_NONE = "不执行"
-    TASK = [TASK_NONE, AnomalyTask.NAME]
+    TASK = [TASK_NONE, AnomalyTask.TASK_NAME]
 
     CONF_CLAIM_MAIL = "领取邮件"
     CONF_COMPLETE_DAILY = "完成每日活跃度"
@@ -49,9 +48,6 @@ class DailyTask(NTEOneTimeTask, BaseNTETask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = "日常任务"
-        self.icon = FluentIcon.CAR
-        self.group_name = "日常/周常"
-        self.group_icon = FluentIcon.CALENDAR
         self.support_schedule_task = True
         self.task_status = {"success": [], "failed": [], "skipped": [], "pending": []}
         self.working_task: Optional[BaseNTETask] = None
@@ -277,7 +273,7 @@ class DailyTask(NTEOneTimeTask, BaseNTETask):
 
         def action():
             self.openESCpanel()
-            self.operate_click(0.8707, 0.8736)
+            self.operate_click(*self.pos.panels.esc.mail)
             self.sleep(0.5)
             return self.wait_panel(Labels.mail_panel)
 
@@ -325,7 +321,7 @@ class DailyTask(NTEOneTimeTask, BaseNTETask):
 
         ret = False
         task_name = self.config.get(self.CONF_TASK)
-        if task_name == AnomalyTask.NAME:
+        if task_name == AnomalyTask.TASK_NAME:
             with self.set_working_task(AnomalyTask) as task:
                 if ret := task.do_run(self.config, stamina_target=must_use):
                     task.shift_id(self)
@@ -356,7 +352,7 @@ class DailyTask(NTEOneTimeTask, BaseNTETask):
     def _open_activity(self):
         def action():
             self.openF1panel()
-            self.operate_click(0.0551, 0.3833)
+            self.operate_click(*self.pos.panels.f1.activity)
             self.sleep(0.5)
             return self.wait_panel(Labels.f1_activity_panel)
 
@@ -445,7 +441,7 @@ class DailyTask(NTEOneTimeTask, BaseNTETask):
 
         def action():
             self.openF2panel()
-            self.operate_click(0.0570, 0.3451)
+            self.operate_click(*self.pos.panels.f2.mission)
             self.sleep(0.5)
             return self.wait_panel(Labels.f2_mission_panel)
 
@@ -467,7 +463,7 @@ class DailyTask(NTEOneTimeTask, BaseNTETask):
 
         def action():
             self.openF5panel()
-            self.operate_click(0.415, 0.753)
+            self.operate_click(*self.pos.panels.f5.coffee)
             self.sleep(0.5)
             return self.wait_panel(Labels.f5_coffee_panel)
 

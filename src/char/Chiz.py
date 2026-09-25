@@ -7,7 +7,7 @@ from src.combat.planner import Planner, RoleProfile
 
 class Chiz(BaseChar):
     cn_name = "小吱"
-    element = BaseChar.Element.WHITE
+    element = BaseChar.ElementType.WHITE
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,7 @@ class Chiz(BaseChar):
         skill = self.click_skill_action()
 
         def entry():
-            ultimate_result = yield ultimate
-            if ultimate_result:
+            if (yield ultimate):
                 self.perform_in_ult()
             yield skill
 

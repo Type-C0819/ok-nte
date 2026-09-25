@@ -110,7 +110,7 @@
         },
         {
             "id": 18,
-            "file_name": "images/10.png",
+            "file_name": "images/11.png",
             "width": 1920,
             "height": 1080
         },
@@ -176,15 +176,21 @@
         },
         {
             "id": 29,
-            "file_name": "images/11.png",
+            "file_name": "images/12.png",
             "width": 1600,
             "height": 900
         },
         {
             "id": 30,
-            "file_name": "images/9.png",
+            "file_name": "images/10.png",
             "width": 2560,
             "height": 1440
+        },
+        {
+            "id": 31,
+            "file_name": "images/12.png",
+            "width": 1600,
+            "height": 900
         },
         {
             "id": 32,
@@ -200,7 +206,7 @@
         },
         {
             "id": 34,
-            "file_name": "images/0.png",
+            "file_name": "images/9.png",
             "width": 2560,
             "height": 1440
         },
@@ -224,6 +230,30 @@
         },
         {
             "id": 39,
+            "file_name": "images/4.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 40,
+            "file_name": "images/1.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 43,
+            "file_name": "images/1.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 44,
+            "file_name": "images/1.png",
+            "width": 2560,
+            "height": 1440
+        },
+        {
+            "id": 45,
             "file_name": "images/4.png",
             "width": 2560,
             "height": 1440
@@ -779,9 +809,9 @@
         {
             "id": 43,
             "image_id": 18,
-            "category_id": 43,
+            "category_id": 88,
             "bbox": [
-                1494,
+                1493,
                 931,
                 45,
                 48
@@ -1013,7 +1043,7 @@
         {
             "id": 61,
             "image_id": 14,
-            "category_id": 42,
+            "category_id": 82,
             "bbox": [
                 26,
                 22,
@@ -1026,7 +1056,7 @@
         {
             "id": 62,
             "image_id": 28,
-            "category_id": 62,
+            "category_id": 84,
             "bbox": [
                 513,
                 339,
@@ -1221,7 +1251,7 @@
         {
             "id": 77,
             "image_id": 36,
-            "category_id": 74,
+            "category_id": 78,
             "bbox": [
                 247,
                 258,
@@ -1233,15 +1263,15 @@
         },
         {
             "id": 78,
-            "image_id": 36,
-            "category_id": 78,
+            "image_id": 45,
+            "category_id": 74,
             "bbox": [
-                1940,
-                681,
-                32,
-                13
+                2373,
+                1262,
+                86,
+                67
             ],
-            "area": 416,
+            "area": 5762,
             "iscrowd": 0
         },
         {
@@ -1268,6 +1298,110 @@
                 75
             ],
             "area": 7875,
+            "iscrowd": 0
+        },
+        {
+            "id": 81,
+            "image_id": 40,
+            "category_id": 81,
+            "bbox": [
+                1103,
+                1085,
+                47,
+                48
+            ],
+            "area": 2256,
+            "iscrowd": 0
+        },
+        {
+            "id": 82,
+            "image_id": 34,
+            "category_id": 62,
+            "bbox": [
+                64,
+                27,
+                70,
+                77
+            ],
+            "area": 5390,
+            "iscrowd": 0
+        },
+        {
+            "id": 83,
+            "image_id": 43,
+            "category_id": 83,
+            "bbox": [
+                91,
+                1165,
+                65,
+                64
+            ],
+            "area": 4160,
+            "iscrowd": 0
+        },
+        {
+            "id": 84,
+            "image_id": 43,
+            "category_id": 85,
+            "bbox": [
+                91,
+                1055,
+                65,
+                64
+            ],
+            "area": 4160,
+            "iscrowd": 0
+        },
+        {
+            "id": 85,
+            "image_id": 43,
+            "category_id": 86,
+            "bbox": [
+                2408,
+                751,
+                55,
+                54
+            ],
+            "area": 2970,
+            "iscrowd": 0
+        },
+        {
+            "id": 86,
+            "image_id": 43,
+            "category_id": 42,
+            "bbox": [
+                2401,
+                743,
+                68,
+                227
+            ],
+            "area": 15436,
+            "iscrowd": 0
+        },
+        {
+            "id": 87,
+            "image_id": 31,
+            "category_id": 87,
+            "bbox": [
+                1243,
+                776,
+                40,
+                40
+            ],
+            "area": 1600,
+            "iscrowd": 0
+        },
+        {
+            "id": 88,
+            "image_id": 44,
+            "category_id": 43,
+            "bbox": [
+                164,
+                263,
+                33,
+                31
+            ],
+            "area": 1023,
             "iscrowd": 0
         }
     ],
@@ -1479,12 +1613,12 @@
         },
         {
             "id": 42,
-            "name": "in_domain",
+            "name": "box_volleyball_stars",
             "supercategory": ""
         },
         {
             "id": 43,
-            "name": "launcher_start_game",
+            "name": "fountain_icon",
             "supercategory": ""
         },
         {
@@ -1579,7 +1713,7 @@
         },
         {
             "id": 62,
-            "name": "heist_exit",
+            "name": "exit_2",
             "supercategory": ""
         },
         {
@@ -1639,7 +1773,7 @@
         },
         {
             "id": 74,
-            "name": "bookshop_logo",
+            "name": "blackbird_ult_2",
             "supercategory": ""
         },
         {
@@ -1659,7 +1793,7 @@
         },
         {
             "id": 78,
-            "name": "icecar_lights",
+            "name": "bookshop_icon",
             "supercategory": ""
         },
         {
@@ -1670,6 +1804,46 @@
         {
             "id": 80,
             "name": "zankou_skill_purple",
+            "supercategory": ""
+        },
+        {
+            "id": 81,
+            "name": "no_remind_today",
+            "supercategory": ""
+        },
+        {
+            "id": 82,
+            "name": "exit_1",
+            "supercategory": ""
+        },
+        {
+            "id": 83,
+            "name": "volleyball_restart",
+            "supercategory": ""
+        },
+        {
+            "id": 84,
+            "name": "heist_exit_panel",
+            "supercategory": ""
+        },
+        {
+            "id": 85,
+            "name": "volleyball_next",
+            "supercategory": ""
+        },
+        {
+            "id": 86,
+            "name": "volleyball_star",
+            "supercategory": ""
+        },
+        {
+            "id": 87,
+            "name": "launcher_update",
+            "supercategory": ""
+        },
+        {
+            "id": 88,
+            "name": "launcher_start",
             "supercategory": ""
         }
     ]

@@ -1,5 +1,4 @@
 from ok import TaskDisabledException
-from qfluentwidgets import FluentIcon
 
 from src.combat.BaseCombatTask import BaseCombatTask
 from src.Labels import Labels
@@ -9,7 +8,7 @@ from src.utils.i18n_format import register_i18n_format
 
 
 class AnomalyTask(NTEOneTimeTask, BaseCombatTask):
-    NAME = "异象界域"
+    TASK_NAME = "异象界域"
 
     # --- 配置项键名 ---
     CONF_TASK_TYPE = "任务类型"
@@ -89,9 +88,8 @@ class AnomalyTask(NTEOneTimeTask, BaseCombatTask):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.name = self.NAME
+        self.name = self.TASK_NAME
         self.description = "自动进行异象界域任务"
-        self.icon = FluentIcon.FLAG
         self._outer_config = None
         self.setup_config(self)
 
@@ -218,11 +216,17 @@ class AnomalyTask(NTEOneTimeTask, BaseCombatTask):
 
         # 共同操作 2
         self.log_info("正在传送至目标地点")
-        btns = self.find_confirms(self.box_of_screen(0.925, 0.190, 0.982, 0.760))
+        btns = self.wait_until(
+            lambda: self.find_confirms(self.box_of_screen(0.925, 0.190, 0.982, 0.760)), time_out=10
+        )
+        if not btns:
+            self.log_warning("未找到副本按钮, 退出任务", notify=True)
+            return False
+
         btn = min(btns, key=lambda x: x.y)
         self.operate_click(btn)
         self.click_traval_button()
-        self.wait_in_team()
+        self.wait_in_team(time_out=300)
 
         stamina_units = stamina // self.TASK_COST
         if stamina_target is not None:
@@ -242,7 +246,7 @@ class AnomalyTask(NTEOneTimeTask, BaseCombatTask):
         completed_count = 0
         while completed_count < total_count:
             double = completed_count < double_count
-            self.wait_until(lambda: self.find_one(Labels.in_domain), time_out=30)
+            self.wait_until(self.find_exit, time_out=30)
             self.wait_in_team()
             self.sleep(1)
             if not self.do_combat_and_claim(double):
@@ -284,14 +288,6 @@ class AnomalyTask(NTEOneTimeTask, BaseCombatTask):
             time_out=10,
         )
 
-    def exit_anomaly(self):
-        self.wait_click_confirm(
-            lambda: self.send_key("esc", interval=2),
-            range=(0.619, 0.609, 0.709, 0.708),
-            settle_time=0.4,
-        )
-        self.wait_in_team_and_world()
-
     def do_combat_and_claim(self, double: bool):
         self.log_info("开始执行战斗流程")
         self.walk_until_combat(run=True, delay=1)
@@ -302,16 +298,9 @@ class AnomalyTask(NTEOneTimeTask, BaseCombatTask):
         def action(count):
             self.walk_to_treasure()
             self.send_interac(handle_claim=False)
-            claims = self.find_all_claim()
-            self.log_info(f"发现 {len(claims)} 个领取奖励")
-            if not claims:
-                self.log_warning("未找到领取奖励按钮")
-                key = "a" if count % 2 else "d"
-                self.send_key(key, down_time=0.5, after_sleep=1)
-                self.next_frame()
-                return False
-            return claims
+            return self.find_all_claim()
 
+        self.rotate_and_find_treasure()
         claims = self.retry_on_action(action)
         if not claims:
             return False

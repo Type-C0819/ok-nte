@@ -11,7 +11,7 @@ from ok import Box, Logger, safe_get
 
 from src import text_white_color
 from src.char.BaseChar import BaseChar, Element
-from src.char.core.CharFactory import get_char_by_id, get_char_by_pos
+from src.char.core.CharFactory import get_char_by_id, get_char_by_impl_id, get_char_by_pos
 from src.char.custom.CustomCharManager import CustomCharManager
 from src.combat.CombatCheck import CombatCheck
 from src.combat.planner import CombatPlanner
@@ -65,7 +65,7 @@ class CombatSession:
 
 
 class BaseCombatTask(CharElementUIMixin, CombatCheck):
-    """基础战斗任务类，封装了游戏"鸣潮"中角色自动化操作的通用逻辑。"""
+    """基础战斗任务类，封装了游戏中角色自动化操作的通用逻辑。"""
 
     hot_key_verified = False  # 热键是否已验证
     FREEZE_DURATION_RETENTION_SECONDS = 20 * 60
@@ -133,7 +133,7 @@ class BaseCombatTask(CharElementUIMixin, CombatCheck):
         session = self.combat_session
         if session.start_char is None:
             session.combat_start = time.time()
-            self.click()
+            self.click(after_sleep=0.25)
             self.switch_to_combat_start_char()
             session.start_char = self.get_current_char(raise_exception=False)
             logger.info(f"combat session started, start char: {session.start_char}")
@@ -307,7 +307,7 @@ class BaseCombatTask(CharElementUIMixin, CombatCheck):
             self.freeze_durations.clear()
             self.freeze_durations.extend(records)
 
-    def time_elapsed_accounting_for_freeze(self, start, intro_motion_freeze=False):
+    def time_elapsed_accounting_for_freeze(self, start, intro_motion_freeze=False) -> float:
         """计算扣除冻结时间后经过的时间。
 
         Args:
@@ -459,12 +459,11 @@ class BaseCombatTask(CharElementUIMixin, CombatCheck):
         free_intro=False,
         require_intro=False,
     ):
-        decision = self.combat_planner.decide_switch(
+        return self.combat_planner.decide_switch(
             current_char,
             free_intro=free_intro,
             require_intro=require_intro,
         )
-        return decision.target, decision.has_intro
 
     def _wait_switch_in_guard(
         self,
@@ -570,13 +569,18 @@ class BaseCombatTask(CharElementUIMixin, CombatCheck):
                 )
                 if retry_intro and not has_intro and not intro_replanned and intro_ready:
                     intro_replanned = True
-                    new_switch_to, new_has_intro = self._decide_switch_to(
+                    new_decision = self._decide_switch_to(
                         current_char,
                         free_intro,
                         require_intro=True,
                     )
+                    new_switch_to = new_decision.target
+                    new_has_intro = new_decision.has_intro
                     if new_has_intro and new_switch_to != current_char:
-                        if not self.combat_planner.has_strict_route(current_char):
+                        if not (
+                            new_decision.strict
+                            or self.combat_planner.has_strict_route(current_char)
+                        ):
                             self._wait_switch_in_guard(current_char, new_switch_to, new_has_intro)
                         switch_to = new_switch_to
                         has_intro = new_has_intro
@@ -666,7 +670,7 @@ class BaseCombatTask(CharElementUIMixin, CombatCheck):
             free_intro (bool, optional): 是否强制认为拥有入场技 (通常在协奏值满时)。默认为 False。
         """
         if not self.combat_session.switch_enabled or self.team_size <= 1:
-            self.click(action_name="switch_char_click", interval=0.1)
+            self.click(after_sleep=0.1)
             return
 
         decision = self.combat_planner.decide_switch(
@@ -686,7 +690,7 @@ class BaseCombatTask(CharElementUIMixin, CombatCheck):
             )
             return
 
-        if not self.combat_planner.has_strict_route(current_char):
+        if not (decision.strict or self.combat_planner.has_strict_route(current_char)):
             self._wait_switch_in_guard(current_char, switch_to, has_intro)
             current_char.wait_switch_cd()
 
@@ -960,12 +964,17 @@ class BaseCombatTask(CharElementUIMixin, CombatCheck):
                     fixed_impl_id = ""
                 else:
                     fixed_char_name = char_info["char_name"]
-                    self.logger.info(
-                        f"Using fixed char {index}: {fixed_char_name} {fixed_impl_id}"
-                    )
+                    # A preset can pin a character without pinning its combo. In that
+                    # case keep using the character's current global implementation.
+                    if not fixed_impl_id:
+                        fixed_impl_id = char_info["impl_id"]
+                    self.logger.info(f"Using fixed char {index}: {fixed_char_name} {fixed_impl_id}")
                     return get_char_by_id(
                         self, index, fixed_char_id, confidence=1, impl_id=fixed_impl_id
                     )
+            if fixed_impl_id:
+                self.logger.info(f"Using fixed implementation {index}: {fixed_impl_id}")
+                return get_char_by_impl_id(self, index, fixed_impl_id, confidence=1)
 
         box_scaled = self.get_char_box(index).scale(1.1, 1.1)
 

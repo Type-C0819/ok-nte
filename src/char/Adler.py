@@ -19,7 +19,7 @@ class Adler(BaseChar):
     """
 
     cn_name = "阿德勒"
-    element = BaseChar.Element.RED
+    element = BaseChar.ElementType.RED
 
     def describe_role(self):
         return RoleProfile(
@@ -35,8 +35,7 @@ class Adler(BaseChar):
         def entry():
             if self.skill_available() and context.is_action_allowed(self, skill):
                 self.continues_normal_attack(1.5)
-            skill_result = yield skill
-            if skill_result:
+            if (yield skill):
                 self.logger.info("shield deployed")
                 self.sleep(0.5)
                 yield ultimate
